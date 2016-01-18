@@ -1,0 +1,32 @@
+{
+  "name": "hello-evolution",
+  "version": "1.0.0",
+  "description": "String matching evolutionary algorithms",
+  "main": "src/main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codenameyau/hello-evolution.git"
+  },
+  "keywords": [
+    "hello",
+    "world",
+    "string",
+    "matching",
+    "evolutionary",
+    "genetic",
+    "algorithm",
+    "fitness"
+  ],
+  "author": "Jorge Yau <codenameyau@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/codenameyau/hello-evolution/issues"
+  },
+  "homepage": "https://github.com/codenameyau/hello-evolution#readme"
+}
