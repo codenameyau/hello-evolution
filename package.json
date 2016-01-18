@@ -28,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/codenameyau/hello-evolution/issues"
   },
-  "homepage": "https://github.com/codenameyau/hello-evolution#readme"
+  "homepage": "https://github.com/codenameyau/hello-evolution#readme",
+  "devDependencies": {
+    "chai": "^3.4.1"
+  }
 }

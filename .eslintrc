@@ -9,7 +9,7 @@
     "es6": true,
     "node": true,
     "browser": true,
-    "mocha": false,
+    "mocha": true,
     "jasmine": false,
     "jest": false,
     "phantomjs": false,
