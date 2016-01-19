@@ -5,8 +5,7 @@
  */
 'use strict';
 
-var evolution = require('./evolution');
+var simulation = require('./simulation');
 
-evolution.algorithm = evolution.sequenceMatching;
-evolution.run();
-console.log(evolution.charset);
+simulation.populationSize = 10;
+simulation.run();
