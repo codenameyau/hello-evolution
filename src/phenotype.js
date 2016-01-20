@@ -12,9 +12,9 @@ function Phenotype(length) {
 }
 
 // A set of all possible characters.
-exports.charset = [];
+var charset = [];
 for (var c=32; c<127; c++) {
-  exports.charset.push(String.fromCharCode(c));
+  charset.push(String.fromCharCode(c));
 }
 
 Phenotype.prototype._randomInt = function(min, max) {
@@ -24,13 +24,13 @@ Phenotype.prototype._randomInt = function(min, max) {
 Phenotype.prototype.genesis = function() {
   this.string = '';
   for (var i=0; i<this.length; i++) {
-    var randomIndex = this._randomInt(0, exports.charset.length);
-    this.string += exports.charset[randomIndex];
+    var randomIndex = this._randomInt(0, charset.length);
+    this.string += charset[randomIndex];
   }
 };
 
 Phenotype.prototype.triggerMutation = function() {
-  var triggeredMutation = Math.random() > exports.mutationRate;
+  var triggeredMutation = Math.random() < this.mutationRate;
 };
 
 module.exports = Phenotype;
