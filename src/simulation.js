@@ -30,11 +30,10 @@ exports.calculateFitness = function(phenotype) {
   phenotype.fitness = exports.target.length - distance;
 };
 
-exports.rankFitness = function(array) {
+exports.sortDesc = function(array, property) {
   array.sort(function(a, b) {
-    return b.fitness - a.fitness;
+    return b[property] - a[property];
   });
-  console.log(array);
 };
 
 exports.rankSelectionProbability = function(rank) {
@@ -52,12 +51,24 @@ exports.createPopulation = function() {
 
 exports.run = function() {
   exports.createPopulation();
-  exports.rankFitness(population);
+  exports.sortDesc(population, 'fitness');
+  var parents = [];
+
+  // Select first parent via elitism.
+  parents.push(population[0]);
+
+  // Select second parent via rank selection.
   for (var i=0; i<exports.populationSize; i++) {
     var rank = i + 1;
     var phenotype = population[i];
     var probabilitySelected = exports.rankSelectionProbability(rank);
+
+    // Parent was selected.
+    if (Math.random() < probabilitySelected) {
+
+    }
     console.log(phenotype.fitness + ' ' + probabilitySelected);
   }
+
   // console.log(population);
 };
