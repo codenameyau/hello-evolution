@@ -7,5 +7,6 @@
 
 var simulation = require('./simulation');
 
+simulation.target = 'Hello';
 simulation.populationSize = 10;
 simulation.run();

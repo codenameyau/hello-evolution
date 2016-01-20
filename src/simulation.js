@@ -5,10 +5,11 @@ var Genotype = require('./genotype');
 /********************************************************************
 * PROPERTIES
 *********************************************************************/
-exports.idealString = 'Hello World!';
-exports.population = [];
+exports.target = 'Hello World!';
 exports.populationSize = 20;
-exports.generations = 0;
+exports.selectionProbability = 0.5;
+var generations = 0;
+var population = [];
 
 
 /********************************************************************
@@ -24,13 +25,39 @@ exports.hammingDistance = function(stringA, stringB) {
   } return distance;
 };
 
-exports.calculateFitness = function(input, target) {
-  return target.length - exports.hammingDistance(input, target);
+exports.calculateFitness = function(genotype) {
+  var distance = exports.hammingDistance(genotype.string, exports.target);
+  genotype.fitness = exports.target.length - distance;
+};
+
+exports.rankFitness = function(array) {
+  array.sort(function(a, b) {
+    return b.fitness - a.fitness;
+  });
+  console.log(array);
+};
+
+exports.rankSelectionProbability = function(rank) {
+  var ps = exports.selectionProbability;
+  return Math.pow((1 - ps), rank - 1) * ps;
+};
+
+exports.createPopulation = function() {
+  for (var i=0; i<exports.populationSize; i++) {
+    var genotype = new Genotype(exports.target.length);
+    exports.calculateFitness(genotype);
+    population.push(genotype);
+  }
 };
 
 exports.run = function() {
+  exports.createPopulation();
+  exports.rankFitness(population);
   for (var i=0; i<exports.populationSize; i++) {
-    exports.population.push(new Genotype(exports.idealString.length));
+    var rank = i + 1;
+    var genotype = population[i];
+    var probabilitySelected = exports.rankSelectionProbability(rank);
+    console.log(genotype.fitness + ' ' + probabilitySelected);
   }
-  console.log(exports.population);
+  // console.log(population);
 };
