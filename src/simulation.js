@@ -1,6 +1,6 @@
 'use strict';
 
-var Genotype = require('./genotype');
+var Phenotype = require('./phenotype');
 
 /********************************************************************
 * PROPERTIES
@@ -25,9 +25,9 @@ exports.hammingDistance = function(stringA, stringB) {
   } return distance;
 };
 
-exports.calculateFitness = function(genotype) {
-  var distance = exports.hammingDistance(genotype.string, exports.target);
-  genotype.fitness = exports.target.length - distance;
+exports.calculateFitness = function(phenotype) {
+  var distance = exports.hammingDistance(phenotype.string, exports.target);
+  phenotype.fitness = exports.target.length - distance;
 };
 
 exports.rankFitness = function(array) {
@@ -44,9 +44,9 @@ exports.rankSelectionProbability = function(rank) {
 
 exports.createPopulation = function() {
   for (var i=0; i<exports.populationSize; i++) {
-    var genotype = new Genotype(exports.target.length);
-    exports.calculateFitness(genotype);
-    population.push(genotype);
+    var phenotype = new Phenotype(exports.target.length);
+    exports.calculateFitness(phenotype);
+    population.push(phenotype);
   }
 };
 
@@ -55,9 +55,9 @@ exports.run = function() {
   exports.rankFitness(population);
   for (var i=0; i<exports.populationSize; i++) {
     var rank = i + 1;
-    var genotype = population[i];
+    var phenotype = population[i];
     var probabilitySelected = exports.rankSelectionProbability(rank);
-    console.log(genotype.fitness + ' ' + probabilitySelected);
+    console.log(phenotype.fitness + ' ' + probabilitySelected);
   }
   // console.log(population);
 };

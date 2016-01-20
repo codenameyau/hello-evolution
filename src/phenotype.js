@@ -3,7 +3,7 @@
 /********************************************************************
 * GENOTYPE CONSTRUCTOR FUNCTION
 *********************************************************************/
-function Genotype(length) {
+function Phenotype(length) {
   this.length = length || 42;
   this.mutationRate = 0.05;
   this.string = '';
@@ -17,11 +17,11 @@ for (var c=32; c<127; c++) {
   exports.charset.push(String.fromCharCode(c));
 }
 
-Genotype.prototype._randomInt = function(min, max) {
+Phenotype.prototype._randomInt = function(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
 
-Genotype.prototype.genesis = function() {
+Phenotype.prototype.genesis = function() {
   this.string = '';
   for (var i=0; i<this.length; i++) {
     var randomIndex = this._randomInt(0, exports.charset.length);
@@ -29,8 +29,8 @@ Genotype.prototype.genesis = function() {
   }
 };
 
-Genotype.prototype.triggerMutation = function() {
+Phenotype.prototype.triggerMutation = function() {
   var triggeredMutation = Math.random() > exports.mutationRate;
 };
 
-module.exports = Genotype;
+module.exports = Phenotype;

@@ -1,22 +1,22 @@
 'use strict';
 
 var assert = require('chai').assert;
-var Genotype = require('../src/genotype');
+var Phenotype = require('../src/phenotype');
 
 describe('simulation', function() {
 
   describe('.genesis()', function() {
     var length = 20;
-    var genotypeA = new Genotype(length);
-    var genotypeB = new Genotype(length);
+    var phenotypeA = new Phenotype(length);
+    var phenotypeB = new Phenotype(length);
 
     it('should create a string of the given length', function() {
-      assert.lengthOf(genotypeA.string, length);
-      assert.lengthOf(genotypeB.string, length);
+      assert.lengthOf(phenotypeA.string, length);
+      assert.lengthOf(phenotypeB.string, length);
     });
 
     it('should create a random string with each subsequent call', function() {
-      assert.notEqual(genotypeA.string, genotypeB.string);
+      assert.notEqual(phenotypeA.string, phenotypeB.string);
     });
   });
 
