@@ -5,11 +5,11 @@ var Phenotype = require('./phenotype');
 /********************************************************************
 * PROPERTIES
 *********************************************************************/
+exports.BASE_SELECTION_PROBABILITY = 0.5;
+exports.MAX_GENERATIONS = 1000;
+exports.POPULATION_SIZE = 20;
 exports.target = 'Hello World!';
-exports.populationSize = 20;
-exports.selectionProbability = 0.5;
 var generations = 0;
-var population = [];
 
 
 /********************************************************************
@@ -36,39 +36,58 @@ exports.sortDesc = function(array, property) {
   });
 };
 
-exports.rankSelectionProbability = function(rank) {
-  var ps = exports.selectionProbability;
+exports.rankProbability = function(rank) {
+  var ps = exports.BASE_SELECTION_PROBABILITY;
   return Math.pow((1 - ps), rank - 1) * ps;
 };
 
 exports.createPopulation = function() {
-  for (var i=0; i<exports.populationSize; i++) {
+  var population = [];
+  for (var i=0; i<exports.POPULATION_SIZE; i++) {
     var phenotype = new Phenotype(exports.target.length);
     exports.calculateFitness(phenotype);
     population.push(phenotype);
-  }
+  } return population;
 };
 
-exports.run = function() {
-  exports.createPopulation();
-  exports.sortDesc(population, 'fitness');
+exports.randomProbability = function() {
+  return Math.random();
+};
+
+/********************************************************************
+* SELECTION ALGORITHMS
+*********************************************************************/
+exports.eliteRankSelection = function(population) {
   var parents = [];
+  exports.sortDesc(population, 'fitness');
 
   // Select first parent via elitism.
   parents.push(population[0]);
 
-  // Select second parent via rank selection.
-  for (var i=0; i<exports.populationSize; i++) {
-    var rank = i + 1;
-    var phenotype = population[i];
-    var probabilitySelected = exports.rankSelectionProbability(rank);
-
-    // Parent was selected.
-    if (Math.random() < probabilitySelected) {
-
+  // Select other parent via rank selection.
+  var chanceSelected = exports.randomProbability();
+  var pHigh = 1, pLow = 0;
+  for (var rank=1; rank<exports.POPULATION_SIZE; rank++) {
+    pLow = exports.rankProbability(rank);
+    if (chanceSelected > pLow && chanceSelected < pHigh) {
+      parents.push(population[rank]);
+      break;
+    } else {
+      pHigh = pLow;
     }
-    console.log(phenotype.fitness + ' ' + probabilitySelected);
   }
 
-  // console.log(population);
+  // Only 2 parents should be selected.
+  return parents;
+};
+
+exports.run = function() {
+  var population = exports.createPopulation();
+
+  // While loop starts here.
+  var parents = exports.eliteRankSelection(population);
+  console.log(parents);
+
+  // Loop with next generation.
+  generations++;
 };
