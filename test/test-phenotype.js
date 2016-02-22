@@ -7,8 +7,8 @@ describe('simulation', function() {
 
   describe('.genesis()', function() {
     var length = 20;
-    var phenotypeA = new Phenotype(length);
-    var phenotypeB = new Phenotype(length);
+    var phenotypeA = new Phenotype('', length);
+    var phenotypeB = new Phenotype('', length);
 
     it('should create a string of the given length', function() {
       assert.lengthOf(phenotypeA.string, length);

@@ -20,20 +20,33 @@ exports.randomInt = function(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
 
+exports.range = function(min, max, step) {
+  step = step || 1;
+  var values = [];
+  for (var i=min; i<max; i+=step) {
+    values.push(i);
+  } return values;
+};
+
+exports.shuffle = function(array) {
+  for (var i=0, randomIndex, temp; i<array.length; i++) {
+    randomIndex = exports.randomInt(i, array.length);
+    temp = array[randomIndex];
+    array[randomIndex] = array[i];
+    array[i] = temp;
+  } return array;
+};
+
 exports.pickFromArray = function(array, picks) {
   // Truncate number of picks to length of array.
-  picks = picks > array.length ? array.length : picks;
+  var length = array.length;
+  picks = picks > length ? length : picks;
 
-  var picked = [];
-  var currentPicks = 0;
-  var temp;
-
-  // Move picks to start of array and continue.
+  // Use a raffling algorithm to select picks.
+  var raffleNumbers = exports.range(0, length);
+  exports.shuffle(raffleNumbers);
+  var pickedItems = [];
   for (var i=0; i<picks; i++) {
-    var randomIndex = exports.randomInt(currentPicks, array.length);
-    picked.push(array[randomIndex]);
-    temp = array[currentPicks];
-    array[currentPicks] = array[randomIndex];
-    array[randomIndex] = temp;
-  } return picked;
+    pickedItems.push(array[raffleNumbers[i]]);
+  } return pickedItems;
 };

@@ -19,6 +19,19 @@ describe('utils', function() {
     });
   });
 
+  describe('.range()', function() {
+    it('should return an array of values with an inclusive range', function() {
+      var array = utils.range(0, 5);
+      assert.isArray(array);
+      assert.lengthOf(array, 5);
+    });
+
+    it('should return the correct values for a step', function() {
+      var array = utils.range(0, 5, 2);
+      assert.lengthOf(array, 3);
+    });
+  });
+
   describe('.pickFromArray()', function() {
     it('should return the same number of items as the picks arg', function() {
       var picks = 3;
@@ -29,17 +42,19 @@ describe('utils', function() {
     });
 
     it('should return all items if the number of picks > length', function() {
-      var picks = 6;
+      var picks = 99;
       var array = [1, 2, 3, 4, 5];
       var pickedItems = utils.pickFromArray(array, picks);
       assert.lengthOf(pickedItems, array.length);
     });
 
-    it('should not changed the original array', function() {
-      var array = [1, 2, 3, 4, 5];
-      var arrayCopy = [1, 2, 3, 4, 5];
+    it('should not change the original array', function() {
+      var array = [1, 2, 3, 4];
+      var arrayCopy = [1, 2, 3, 4];
       utils.pickFromArray(array, 3);
-      assert.equal(array, arrayCopy);
+      for (var i=0; i<array.length; i++) {
+        assert.strictEqual(array[i], arrayCopy[i]);
+      }
     });
   });
 
