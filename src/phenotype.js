@@ -1,12 +1,13 @@
 'use strict';
 
+var utils = require('./utils');
+
 /********************************************************************
 * GENOTYPE CONSTRUCTOR FUNCTION
 *********************************************************************/
-function Phenotype(length, string) {
-  this.length = length || 42;
+function Phenotype(string, length) {
   this.mutationRate = 0.10;
-  this.string = string || this.genesis();
+  this.string = string || this.genesis(length);
   this.fitness = 0;
   this.diversity = 0;
 }
@@ -18,16 +19,12 @@ for (var c=32; c<127; c++) {
 }
 
 Phenotype.prototype.getRandomCharacter = function() {
-  return charset[this.randomInt(0, charset.length)];
+  return charset[utils.randomInt(0, charset.length)];
 };
 
-Phenotype.prototype.randomInt = function(min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
-};
-
-Phenotype.prototype.genesis = function() {
+Phenotype.prototype.genesis = function(length) {
   var string = '';
-  for (var i=0; i<this.length; i++) {
+  for (var i=0; i<length; i++) {
     string += this.getRandomCharacter();
   } return string;
 };

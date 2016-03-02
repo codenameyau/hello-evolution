@@ -8,5 +8,6 @@
 var simulation = require('./simulation');
 
 simulation.target = 'Hello';
-simulation.populationSize = 10;
+simulation.POPULATION_SIZE = 100;
+simulation.MAX_GENERATIONS = 2000;
 simulation.run();

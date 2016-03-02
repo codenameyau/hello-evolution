@@ -1,72 +1,40 @@
 'use strict';
 
 var Phenotype = require('./phenotype');
+var utils = require('./utils');
 
 /********************************************************************
 * PROPERTIES
 *********************************************************************/
-exports.BASE_SELECTION_PROBABILITY = 0.5;
 exports.MAX_GENERATIONS = 500;
-exports.POPULATION_SIZE = 5;
-exports.MITOSIS_COUNT = 5;
+exports.POPULATION_SIZE = 10;
 exports.target = 'Hello World!';
 var generations = 0;
 
 
 /********************************************************************
-* METHODS
+* SELECTION ALGORITHMS
 *********************************************************************/
-exports.hammingDistance = function(stringA, stringB) {
-  var distance = 0;
-  var len = stringB.length;
-  for (var i=0; i<len; i++) {
-    if (stringA[i] !== stringB[i]) {
-      distance++;
-    }
-  } return distance;
-};
 
-exports.calculateFitness = function(phenotype) {
-  var distance = exports.hammingDistance(phenotype.string, exports.target);
-  phenotype.fitness = exports.target.length - distance;
-};
-
-exports.sortDesc = function(array, property) {
-  array.sort(function(a, b) {
-    return b[property] - a[property];
-  });
-};
-
-exports.rankProbability = function(rank) {
-  var ps = exports.BASE_SELECTION_PROBABILITY;
+// The following two are unused.
+var rankProbability = function(rank) {
+  var ps = 0.5;
   return Math.pow((1 - ps), rank - 1) * ps;
 };
 
-exports.createPopulation = function() {
-  var population = [];
-  for (var i=0; i<exports.POPULATION_SIZE; i++) {
-    var phenotype = new Phenotype(exports.target.length);
-    exports.calculateFitness(phenotype);
-    population.push(phenotype);
-  } return population;
-};
-
-
-/********************************************************************
-* SELECTION ALGORITHMS
-*********************************************************************/
-exports.eliteRankSelection = function(population) {
+// BUG!! Doesn't always pick a parent.
+var rankSelection = function(population) {
   var parents = [];
-  exports.sortDesc(population, 'fitness');
+  utils.sortDesc(population, 'fitness');
 
-  // Select first parent via elitism.
+  // Select parents via elitism.
   parents.push(population[0]);
 
   // Select other parent (2 total) via rank selection.
   var chanceSelected = Math.random();
   var pHigh = 1, pLow = 0;
   for (var rank=1; rank<exports.POPULATION_SIZE; rank++) {
-    pLow = exports.rankProbability(rank);
+    pLow = rankProbability(rank);
     if (chanceSelected > pLow && chanceSelected < pHigh) {
       parents.push(population[rank]);
       break;
@@ -78,41 +46,61 @@ exports.eliteRankSelection = function(population) {
   return parents;
 };
 
-exports.randomInt = function(min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
+exports.calculateFitness = function(phenotype) {
+  var distance = utils.hammingDistance(phenotype.string, exports.target);
+  phenotype.fitness = exports.target.length - distance;
+};
+
+exports.createPopulation = function() {
+  var population = [];
+  for (var i=0; i<exports.POPULATION_SIZE; i++) {
+    var phenotype = new Phenotype('', exports.target.length);
+    exports.calculateFitness(phenotype);
+    population.push(phenotype);
+  } return population;
+};
+
+exports.eliteRankSelection = function(population) {
+  var parents = [];
+  // Make number of survivors a normal distribution.
+  var numSurvived = Math.floor((
+      utils.randomInt(2, exports.POPULATION_SIZE) +
+      utils.randomInt(2, exports.POPULATION_SIZE)) / 2);
+  numSurvived = (numSurvived < 2) ? 2 : numSurvived;
+  utils.sortDesc(population, 'fitness');
+  for (var i=0; i<numSurvived; i++) {
+    parents.push(population[i]);
+  } return parents;
+};
+
+exports.simulateMutation = function(parent, index) {
+  return (Math.random() < parent.mutationRate)
+    ? parent.getRandomCharacter() : parent.string[index];
 };
 
 exports.createChild = function(p1, p2) {
-  var length = p1.length;
+  var length = p1.string.length;
   var mixedString = '';
   for (var c=0; c<length; c++) {
-    console.log(p1);
-    console.log(p2);
-    var genePool = [p1.string[c], p2.string[c]];
-    mixedString += genePool[exports.randomInt(0, genePool.length)];
+    var gene1 = exports.simulateMutation(p1, c);
+    var gene2 = exports.simulateMutation(p2, c);
+    var genePool = [gene1, gene2];
+    mixedString += genePool[utils.randomInt(0, genePool.length)];
   }
-
-  var child = new Phenotype(p1.length, mixedString);
+  var child = new Phenotype(mixedString);
   exports.calculateFitness(child);
   return child;
 };
 
 exports.breedParents = function(parents) {
   var nextGeneration = [];
-
-  // Breed the parents.
+  // Pick random two parents to breed in each iteration.
   for (var i=0; i<exports.POPULATION_SIZE; i++) {
-
-    // Make parents undergo mitosis for possible mutations.
-    parents.map(function(parent) {
-      parent.mitosis();
-    });
-
-    var p1 = parents[0];
-    var p2 = parents[1];
+    var selection = utils.pickFromArray(parents, 2);
+    var p1 = selection[0];
+    var p2 = selection[1];
     nextGeneration.push(exports.createChild(p1, p2));
-  }
-  return nextGeneration;
+  } return nextGeneration;
 };
 
 exports.hasReachedTarget = function(phenotype) {
@@ -121,20 +109,15 @@ exports.hasReachedTarget = function(phenotype) {
 
 exports.run = function() {
   var population = exports.createPopulation();
-  console.log(population);
-  console.log('\n');
+  // console.log(population);
+  // console.log('\n');
 
-  // While loop starts here.
-  for (var t=0; t<exports.MAX_GENERATIONS; t++) {
+  // Simulation.
+  for (var t=0; t<=exports.MAX_GENERATIONS; t++) {
     var parents = exports.eliteRankSelection(population);
-    if (exports.hasReachedTarget(parents[0])) {
-      break;
-    } else {
-      console.log('Generation: %s | Max Fitness: %s | Phenotype: "%s"',
-        t, parents[0].fitness, parents[0].string);
-    }
-    console.log('\n');
-    console.log(parents);
+    console.log('Generation: %s | Max Fitness: %s | Phenotype: "%s"',
+      t, parents[0].fitness, parents[0].string);
+    if (exports.hasReachedTarget(parents[0])) { break; }
     population = exports.breedParents(parents);
     generations++;
   }

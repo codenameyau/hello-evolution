@@ -6,16 +6,20 @@ var utils = require('../src/utils');
 describe('utils', function() {
 
   describe('.hammingDistance()', function() {
-    it('should return 3 for "karolin" and "kathrin"', function() {
-      var stringA = 'karolin';
-      var stringB = 'kathrin';
-      assert.strictEqual(utils.hammingDistance(stringA, stringB), 3);
+    it('should return 0 for two empty strings', function() {
+      assert.strictEqual(utils.hammingDistance('', ''), 0);
     });
 
     it('should return 2 for "1011101" and "1001001"', function() {
       var stringA = '1011101';
       var stringB = '1001001';
       assert.strictEqual(utils.hammingDistance(stringA, stringB), 2);
+    });
+
+    it('should return 3 for "karolin" and "kathrin"', function() {
+      var stringA = 'karolin';
+      var stringB = 'kathrin';
+      assert.strictEqual(utils.hammingDistance(stringA, stringB), 3);
     });
   });
 
