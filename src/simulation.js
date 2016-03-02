@@ -15,37 +15,6 @@ var generations = 0;
 /********************************************************************
 * SELECTION ALGORITHMS
 *********************************************************************/
-
-// The following two are unused.
-var rankProbability = function(rank) {
-  var ps = 0.5;
-  return Math.pow((1 - ps), rank - 1) * ps;
-};
-
-// BUG!! Doesn't always pick a parent.
-var rankSelection = function(population) {
-  var parents = [];
-  utils.sortDesc(population, 'fitness');
-
-  // Select parents via elitism.
-  parents.push(population[0]);
-
-  // Select other parent (2 total) via rank selection.
-  var chanceSelected = Math.random();
-  var pHigh = 1, pLow = 0;
-  for (var rank=1; rank<exports.POPULATION_SIZE; rank++) {
-    pLow = rankProbability(rank);
-    if (chanceSelected > pLow && chanceSelected < pHigh) {
-      parents.push(population[rank]);
-      break;
-    } else {
-      pHigh = pLow;
-    }
-  }
-
-  return parents;
-};
-
 exports.calculateFitness = function(phenotype) {
   var distance = utils.hammingDistance(phenotype.string, exports.target);
   phenotype.fitness = exports.target.length - distance;
