@@ -8,13 +8,18 @@ var utils = require('./utils');
 *********************************************************************/
 exports.MAX_GENERATIONS = 500;
 exports.POPULATION_SIZE = 10;
+exports.NUM_TRIALS = 50;
 exports.target = 'Hello World!';
-var generations = 0;
 
 
 /********************************************************************
 * SELECTION ALGORITHMS
 *********************************************************************/
+exports.rankProbability = function(rank) {
+  var ps = 0.5;
+  return Math.pow((1 - ps), rank - 1) * ps;
+};
+
 exports.calculateFitness = function(phenotype) {
   var distance = utils.hammingDistance(phenotype.string, exports.target);
   phenotype.fitness = exports.target.length - distance;
@@ -76,18 +81,34 @@ exports.hasReachedTarget = function(phenotype) {
   return phenotype.string === exports.target;
 };
 
-exports.run = function() {
+exports.run = function(log) {
+  log = log || false;
+  var generations = 0;
   var population = exports.createPopulation();
-  // console.log(population);
-  // console.log('\n');
-
-  // Simulation.
   for (var t=0; t<=exports.MAX_GENERATIONS; t++) {
     var parents = exports.eliteRankSelection(population);
-    console.log('Generation: %s | Max Fitness: %s | Phenotype: "%s"',
-      t, parents[0].fitness, parents[0].string);
+    if (log) {
+      console.log('Generation: %s | Max Fitness: %s | Phenotype: "%s"',
+        t, parents[0].fitness, parents[0].string);
+    }
     if (exports.hasReachedTarget(parents[0])) { break; }
     population = exports.breedParents(parents);
     generations++;
   }
+
+  // Return number of generations to reach target fitness.
+  return generations;
+};
+
+exports.runTrial = function() {
+  var numGenerations = [];
+  for (var i=0; i<exports.NUM_TRIALS; i++) {
+    numGenerations.push(exports.run());
+  }
+  console.log('Target String: "%s"', exports.target);
+  console.log('Population Size: %s', exports.POPULATION_SIZE);
+  console.log();
+  console.log('Number of Trials: %s', exports.NUM_TRIALS);
+  console.log('Mean Generations: %s', utils.mean(numGenerations));
+  console.log('Standard Deviation: %s', utils.stdev(numGenerations));
 };

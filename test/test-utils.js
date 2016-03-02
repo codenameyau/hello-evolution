@@ -23,6 +23,33 @@ describe('utils', function() {
     });
   });
 
+  describe('.mean()', function() {
+    it('should return 0 for an empty array', function() {
+      var mean = utils.mean([]);
+      assert.strictEqual(mean, 0);
+    });
+
+    it('should return an number for array of numbers', function() {
+      var mean = utils.mean([5, 10, 15, 20, 25]);
+      assert.isNumber(mean);
+      assert.strictEqual(mean, 15);
+    });
+  });
+
+
+  describe('.stdev()', function() {
+    it('should return 0 for an empty array', function() {
+      var stdev = utils.stdev([]);
+      assert.strictEqual(stdev, 0);
+    });
+
+    it('should return an approximate stdev for array of numbers', function() {
+      var stdev = utils.stdev([5, 10, 15, 20, 25]);
+      assert.isNumber(stdev);
+      assert.approximately(stdev, 7.905, 0.1);
+    });
+  });
+
   describe('.range()', function() {
     it('should return an array of values with an inclusive range', function() {
       var array = utils.range(0, 5);

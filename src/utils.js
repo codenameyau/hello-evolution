@@ -10,6 +10,27 @@ exports.hammingDistance = function(stringA, stringB) {
   } return distance;
 };
 
+exports.mean = function(numbers) {
+  if (!numbers.length) { return 0; }
+  var cumulation = 0;
+  for (var i=0; i<numbers.length; i++) {
+    cumulation += numbers[i];
+  } return cumulation / numbers.length;
+};
+
+exports.stdev = function(numbers) {
+  if (!numbers.length) { return 0; }
+  var avg = exports.mean(numbers);
+  var variances = [];
+  for (var i=0; i<numbers.length; i++) {
+    variances.push(Math.pow(avg - numbers[i], 2));
+  }
+  var variance = variances.reduce(function(prev, curr) {
+    return prev + curr;
+  }) / (numbers.length - 1);
+  return Math.sqrt(variance);
+};
+
 exports.sortDesc = function(array, property) {
   array.sort(function(a, b) {
     return b[property] - a[property];
