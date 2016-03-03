@@ -10,6 +10,7 @@ exports.MAX_GENERATIONS = 500;
 exports.POPULATION_SIZE = 10;
 exports.NUM_TRIALS = 50;
 exports.target = 'Hello World!';
+exports.simulation = [];
 
 
 /********************************************************************
@@ -34,15 +35,10 @@ exports.createPopulation = function() {
   } return population;
 };
 
-exports.eliteRankSelection = function(population) {
+exports.eliteRankSelection = function(population, numSelections) {
   var parents = [];
-  // Make number of survivors a normal distribution.
-  var numSurvived = Math.floor((
-      utils.randomInt(2, exports.POPULATION_SIZE) +
-      utils.randomInt(2, exports.POPULATION_SIZE)) / 2);
-  numSurvived = (numSurvived < 2) ? 2 : numSurvived;
   utils.sortDesc(population, 'fitness');
-  for (var i=0; i<numSurvived; i++) {
+  for (var i=0; i<numSelections; i++) {
     parents.push(population[i]);
   } return parents;
 };
@@ -81,34 +77,65 @@ exports.hasReachedTarget = function(phenotype) {
   return phenotype.string === exports.target;
 };
 
-exports.run = function(log) {
-  log = log || false;
+exports.reset = function() {
+  exports.simulation = [];
+};
+
+exports.run = function() {
+  exports.reset();
   var generations = 0;
   var population = exports.createPopulation();
   for (var t=0; t<=exports.MAX_GENERATIONS; t++) {
-    var parents = exports.eliteRankSelection(population);
-    if (log) {
-      console.log('Generation: %s | Max Fitness: %s | Phenotype: "%s"',
-        t, parents[0].fitness, parents[0].string);
-    }
+    // Make number of selections normally distribution.
+    var numSelections = Math.floor((
+        utils.randomInt(2, exports.POPULATION_SIZE) +
+        utils.randomInt(2, exports.POPULATION_SIZE)) / 2);
+
+    // Ensure that there are always at least 2 parents.
+    numSelections = (numSelections < 2) ? 2 : numSelections;
+    var parents = exports.eliteRankSelection(population, numSelections);
+
+    // Save data for this generation.
+    exports.simulation.push({
+      generation: t,
+      survived: numSelections,
+      maxFitness: parents[0].fitness,
+      phenotype: parents[0].string
+    });
+
+    // Iterate next generation if target fitness has not been reached.
     if (exports.hasReachedTarget(parents[0])) { break; }
     population = exports.breedParents(parents);
     generations++;
   }
-
-  // Return number of generations to reach target fitness.
-  return generations;
 };
 
 exports.runTrial = function() {
   var numGenerations = [];
   for (var i=0; i<exports.NUM_TRIALS; i++) {
-    numGenerations.push(exports.run());
+    exports.run();
+    numGenerations.push(exports.simulation.length);
   }
   console.log('Target String: "%s"', exports.target);
   console.log('Population Size: %s', exports.POPULATION_SIZE);
-  console.log();
-  console.log('Number of Trials: %s', exports.NUM_TRIALS);
+  console.log('\nNumber of Trials: %s', exports.NUM_TRIALS);
   console.log('Mean Generations: %s', utils.mean(numGenerations));
   console.log('Standard Deviation: %s', utils.stdev(numGenerations));
+};
+
+exports.log = function() {
+  var tableHeading = 'Generation\tSurvived\tMax Fitness\tPhenotype';
+  var tableSeparator = '-'.repeat(tableHeading.length + 4 * 4);
+  console.log(tableSeparator);
+  console.log(tableHeading);
+  console.log(tableSeparator);
+  for (var i=0; i<exports.simulation.length; i++) {
+    var generation = exports.simulation[i];
+    var row = '';
+    for (var key in generation) {
+      if (generation.hasOwnProperty(key)) {
+        row += generation[key] + '\t\t';
+      }
+    } console.log(row);
+  }
 };

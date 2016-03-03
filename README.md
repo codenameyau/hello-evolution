@@ -1,19 +1,8 @@
 # hello-evolution
 String matching evolutionary algorithms
 
-Trials
 ```bash
-yau@YAU-PC (02:16 AM) src (master) $ node main.js
-Target String: "Hello World!"
-Population Size: 100
-
-Number of Trials: 50
-Mean Generations: 81.28
-Standard Deviation: 32.7781908579221
-```
-
-Sample Output.
-```bash
+# Sample Output
 yau@YAU-PC (02:18 AM) src (master) $ node main.js
 Generation: 0 | Max Fitness: 2 | Phenotype: "\y.Kow$ol\>d"
 Generation: 1 | Max Fitness: 3 | Phenotype: "#El*oFk;Ie3!"
@@ -36,9 +25,23 @@ Generation: 17 | Max Fitness: 11 | Phenotype: "Hello Sorld!"
 Generation: 18 | Max Fitness: 12 | Phenotype: "Hello World!"
 ```
 
+--
+
 ### Findings
 
 Population size has a huge impact on decreasing the number of generations
 required to reach the targetted fitness. This is because there is a larger
 and more diverse gene pool to choose from and a higher chance of mutation
 for each potential parent.
+
+This is the sameple trial output for how many generations it takes to reach
+the target fitness goal.
+
+```
+Target String: "Hello World!"
+Population Size: 100
+
+Number of Trials: 500
+Mean Generations: 74.604
+Standard Deviation: 31.876439556474867
+```
