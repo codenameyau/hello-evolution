@@ -26,6 +26,21 @@ exports.calculateFitness = function(phenotype) {
   phenotype.fitness = exports.target.length - distance;
 };
 
+exports.calculateDiversity = function(population) {
+  // TODO: Find O(n*log(n)) algorithm to calculate diversity.
+  for (var i=0; i<population.length; i++) {
+    var totalDistance = 0;
+    for (var j=0; j<population.length; j++) {
+      if (i !== j) {
+        totalDistance += utils.hammingDistance(
+          population[i].string, population[j].string);
+      }
+    }
+    var diversity = totalDistance / (population.length - 1);
+    population[i].diversity = Number(diversity.toFixed(2));
+  }
+};
+
 exports.createPopulation = function() {
   var population = [];
   for (var i=0; i<exports.POPULATION_SIZE; i++) {
@@ -35,9 +50,9 @@ exports.createPopulation = function() {
   } return population;
 };
 
-exports.eliteRankSelection = function(population, numSelections) {
+exports.rankSelection = function(population, numSelections, property) {
   var parents = [];
-  utils.sortDesc(population, 'fitness');
+  utils.sortDesc(population, property || 'fitness');
   for (var i=0; i<numSelections; i++) {
     parents.push(population[i]);
   } return parents;
@@ -57,9 +72,7 @@ exports.createChild = function(p1, p2) {
     var genePool = [gene1, gene2];
     mixedString += genePool[utils.randomInt(0, genePool.length)];
   }
-  var child = new Phenotype(mixedString);
-  exports.calculateFitness(child);
-  return child;
+  return new Phenotype(mixedString);
 };
 
 exports.breedParents = function(parents) {
@@ -69,8 +82,12 @@ exports.breedParents = function(parents) {
     var selection = utils.pickFromArray(parents, 2);
     var p1 = selection[0];
     var p2 = selection[1];
-    nextGeneration.push(exports.createChild(p1, p2));
-  } return nextGeneration;
+    var child = exports.createChild(p1, p2);
+    exports.calculateFitness(child);
+    nextGeneration.push(child);
+  }
+  exports.calculateDiversity(nextGeneration);
+  return nextGeneration;
 };
 
 exports.hasReachedTarget = function(phenotype) {
@@ -93,19 +110,20 @@ exports.run = function() {
 
     // Ensure that there are always at least 2 parents.
     numSelections = (numSelections < 2) ? 2 : numSelections;
-    var parents = exports.eliteRankSelection(population, numSelections);
+    var pf = exports.rankSelection(population, numSelections, 'fitness');
+    var pd = exports.rankSelection(population, numSelections, 'diversity');
 
     // Save data for this generation.
     exports.simulation.push({
       generation: t,
       survived: numSelections,
-      maxFitness: parents[0].fitness,
-      phenotype: parents[0].string
+      maxFitness: pf[0].fitness,
+      phenotype: pf[0].string
     });
 
     // Iterate next generation if target fitness has not been reached.
-    if (exports.hasReachedTarget(parents[0])) { break; }
-    population = exports.breedParents(parents);
+    if (exports.hasReachedTarget(pf[0])) { break; }
+    population = exports.breedParents(pf);
     generations++;
   }
 };

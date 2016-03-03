@@ -6,7 +6,7 @@ var utils = require('./utils');
 * GENOTYPE CONSTRUCTOR FUNCTION
 *********************************************************************/
 function Phenotype(string, length) {
-  this.mutationRate = 0.10;
+  this.mutationRate = 0.1;
   this.string = string || this.genesis(length);
   this.fitness = 0;
   this.diversity = 0;
