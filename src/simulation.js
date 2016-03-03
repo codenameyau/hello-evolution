@@ -47,7 +47,9 @@ exports.createPopulation = function() {
     var phenotype = new Phenotype('', exports.target.length);
     exports.calculateFitness(phenotype);
     population.push(phenotype);
-  } return population;
+  }
+  exports.calculateDiversity(population);
+  return population;
 };
 
 exports.rankSelection = function(population, numSelections, property) {
@@ -118,6 +120,7 @@ exports.run = function() {
       generation: t,
       survived: numSelections,
       maxFitness: pf[0].fitness,
+      maxDiversity: pd[0].diversity,
       phenotype: pf[0].string
     });
 
@@ -142,8 +145,9 @@ exports.runTrial = function() {
 };
 
 exports.log = function() {
-  var tableHeading = 'Generation\tSurvived\tMax Fitness\tPhenotype';
-  var tableSeparator = '-'.repeat(tableHeading.length + 4 * 4);
+  var headings = Object.keys(exports.simulation[0]);
+  var tableHeading = headings.join(' | ');
+  var tableSeparator = '-'.repeat(tableHeading.length);
   console.log(tableSeparator);
   console.log(tableHeading);
   console.log(tableSeparator);
@@ -152,7 +156,9 @@ exports.log = function() {
     var row = '';
     for (var key in generation) {
       if (generation.hasOwnProperty(key)) {
-        row += generation[key] + '\t\t';
+        var headingLength = key.length;
+        row += generation[key] + ' '.repeat(
+          headingLength - String(generation[key]).length + 3);
       }
     } console.log(row);
   }
