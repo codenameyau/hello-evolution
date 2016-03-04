@@ -3,26 +3,22 @@ String matching evolutionary algorithms
 
 ```bash
 # Sample Output
-yau@YAU-PC (02:18 AM) src (master) $ node main.js
-Generation: 0 | Max Fitness: 2 | Phenotype: "\y.Kow$ol\>d"
-Generation: 1 | Max Fitness: 3 | Phenotype: "#El*oFk;Ie3!"
-Generation: 2 | Max Fitness: 3 | Phenotype: ",e.l>/&oIY{d"
-Generation: 3 | Max Fitness: 4 | Phenotype: "uelhLwW'x"u!"
-Generation: 4 | Max Fitness: 7 | Phenotype: "|elDs worli!"
-Generation: 5 | Max Fitness: 7 | Phenotype: "<elzo WoOmc!"
-Generation: 6 | Max Fitness: 8 | Phenotype: ""ellu Wokmd!"
-Generation: 7 | Max Fitness: 7 | Phenotype: ""ellsJkormd!"
-Generation: 8 | Max Fitness: 7 | Phenotype: "|el.o W\ md!"
-Generation: 9 | Max Fitness: 8 | Phenotype: "Helao WoHPX!"
-Generation: 10 | Max Fitness: 8 | Phenotype: "|ello G@sld!"
-Generation: 11 | Max Fitness: 10 | Phenotype: "^ello Worls!"
-Generation: 12 | Max Fitness: 10 | Phenotype: "^el-o World!"
-Generation: 13 | Max Fitness: 10 | Phenotype: "^ello Worldq"
-Generation: 14 | Max Fitness: 10 | Phenotype: "|ello Wor)d!"
-Generation: 15 | Max Fitness: 11 | Phenotype: "Hello Woxld!"
-Generation: 16 | Max Fitness: 11 | Phenotype: "Hello Woxld!"
-Generation: 17 | Max Fitness: 11 | Phenotype: "Hello Sorld!"
-Generation: 18 | Max Fitness: 12 | Phenotype: "Hello World!"
+@yau@YAU-PC (05:59 PM) src (master) $ node main.js
+
+------------------------------------------------------------------------
+generation | survived | maxFitness | maxDiversity | maxScore | phenotype
+------------------------------------------------------------------------
+0            44         1            5              6          H^aqb
+1            31         2            5              6.9        H=aqo
+2            94         2            4.9            6.7        HO|lV
+3            85         2            4.9            6.8        +euRo
+4            79         2            5              6.7        Ialho
+5            42         3            4.9            7.5        Hal{o
+6            45         3            5              7.3        PYllo
+7            93         3            4.9            7.1        He|8o
+8            74         3            4.9            7          HN[lo
+9            26         4            4.9            7.5        HelRo
+10           42         5            4.8            7.7        Hello
 ```
 
 --

@@ -89,4 +89,17 @@ describe('utils', function() {
     });
   });
 
+  describe('.findMax()', function() {
+    var sample = [
+      {id: 1, score: 2},
+      {id: 2, score: 5},
+      {id: 3, score: 0}
+    ];
+
+    it('should return the max value of the property in the array', function() {
+      assert.strictEqual(utils.findMax(sample, 'id'), 3);
+      assert.strictEqual(utils.findMax(sample, 'score'), 5);
+    });
+  });
+
 });

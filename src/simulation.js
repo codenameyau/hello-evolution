@@ -1,5 +1,6 @@
 'use strict';
 
+var async = require('async');
 var Phenotype = require('./phenotype');
 var utils = require('./utils');
 
@@ -10,7 +11,6 @@ exports.MAX_GENERATIONS = 500;
 exports.POPULATION_SIZE = 10;
 exports.NUM_TRIALS = 50;
 exports.target = 'Hello World!';
-exports.simulation = [];
 
 
 /********************************************************************
@@ -37,7 +37,8 @@ exports.calculateDiversity = function(population) {
       }
     }
     var diversity = totalDistance / (population.length - 1);
-    population[i].diversity = Number(diversity.toFixed(2));
+    population[i].diversity = utils.round(diversity);
+    population[i].calculateScore();
   }
 };
 
@@ -52,9 +53,8 @@ exports.createPopulation = function() {
   return population;
 };
 
-exports.rankSelection = function(population, numSelections, property) {
+exports.selectParents = function(population, numSelections) {
   var parents = [];
-  utils.sortDesc(population, property || 'fitness');
   for (var i=0; i<numSelections; i++) {
     parents.push(population[i]);
   } return parents;
@@ -92,16 +92,8 @@ exports.breedParents = function(parents) {
   return nextGeneration;
 };
 
-exports.hasReachedTarget = function(phenotype) {
-  return phenotype.string === exports.target;
-};
-
-exports.reset = function() {
-  exports.simulation = [];
-};
-
 exports.run = function() {
-  exports.reset();
+  var results = [];
   var generations = 0;
   var population = exports.createPopulation();
   for (var t=0; t<=exports.MAX_GENERATIONS; t++) {
@@ -111,54 +103,66 @@ exports.run = function() {
         utils.randomInt(2, exports.POPULATION_SIZE)) / 2);
 
     // Ensure that there are always at least 2 parents.
-    numSelections = (numSelections < 2) ? 2 : numSelections;
-    var pf = exports.rankSelection(population, numSelections, 'fitness');
-    var pd = exports.rankSelection(population, numSelections, 'diversity');
+    numSelections = (numSelections > 2) ? numSelections : 2;
+    utils.sortDesc(population, 'score');
+    var parents = exports.selectParents(population, numSelections);
 
-    // Save data for this generation.
-    exports.simulation.push({
+    // Determine max fitness and diversity for this generation.
+    var mostFit = utils.findBest(population, 'fitness');
+    var mostDiverse = utils.findBest(population, 'diversity');
+
+    // Save results for this generation.
+    results.push({
       generation: t,
       survived: numSelections,
-      maxFitness: pf[0].fitness,
-      maxDiversity: pd[0].diversity,
-      phenotype: pf[0].string
+      maxFitness: mostFit.fitness,
+      maxDiversity: mostDiverse.diversity,
+      maxScore: population[0].score,
+      phenotype: mostFit.string
     });
 
     // Iterate next generation if target fitness has not been reached.
-    if (exports.hasReachedTarget(pf[0])) { break; }
-    population = exports.breedParents(pf);
+    if (mostFit.string === exports.target) { break; }
+    population = exports.breedParents(parents);
     generations++;
   }
+  return results;
 };
 
 exports.runTrial = function() {
-  var numGenerations = [];
-  for (var i=0; i<exports.NUM_TRIALS; i++) {
-    exports.run();
-    numGenerations.push(exports.simulation.length);
-  }
-  console.log('Target String: "%s"', exports.target);
-  console.log('Population Size: %s', exports.POPULATION_SIZE);
-  console.log('\nNumber of Trials: %s', exports.NUM_TRIALS);
-  console.log('Mean Generations: %s', utils.mean(numGenerations));
-  console.log('Standard Deviation: %s', utils.stdev(numGenerations));
+  var trialResults = [];
+  var trials = utils.range(0, exports.NUM_TRIALS);
+  async.each(trials, function(item, callback) {
+    var results = exports.run();
+    trialResults.push(results.length);
+    callback(null);
+  }, function(error) {
+    if (error) { return console.log(error); }
+    console.log('Target String: "%s"', exports.target);
+    console.log('Population Size: %s', exports.POPULATION_SIZE);
+    console.log('\nNumber of Trials: %s', exports.NUM_TRIALS);
+    console.log('Mean Generations: %s', utils.mean(trialResults));
+    console.log('Standard Deviation: %s', utils.stdev(trialResults));
+  });
 };
 
-exports.log = function() {
-  var headings = Object.keys(exports.simulation[0]);
+exports.log = function(results) {
+  var headings = Object.keys(results[0]);
   var tableHeading = headings.join(' | ');
   var tableSeparator = '-'.repeat(tableHeading.length);
-  console.log(tableSeparator);
-  console.log(tableHeading);
-  console.log(tableSeparator);
-  for (var i=0; i<exports.simulation.length; i++) {
-    var generation = exports.simulation[i];
+  for (var i=0; i<results.length; i++) {
+    if (i % 50 === 0) {
+      console.log('\n' + tableSeparator);
+      console.log(tableHeading);
+      console.log(tableSeparator);
+    }
+    var generation = results[i];
     var row = '';
     for (var key in generation) {
       if (generation.hasOwnProperty(key)) {
         var headingLength = key.length;
         row += generation[key] + ' '.repeat(
-          headingLength - String(generation[key]).length + 3);
+          headingLength + 3 - String(generation[key]).length);
       }
     } console.log(row);
   }

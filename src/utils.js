@@ -71,3 +71,28 @@ exports.pickFromArray = function(array, picks) {
     pickedItems.push(array[raffleNumbers[i]]);
   } return pickedItems;
 };
+
+exports.findMax = function(array, property) {
+  // O(n) solution. More efficient than sorting array.
+  var max = 0;
+  for (var i=0; i<array.length; i++) {
+    var value = array[i][property];
+    if (value > max) {
+      max = value;
+    }
+  } return max;
+};
+
+exports.findBest = function(array, property) {
+  var bestElement = array[0];
+  for (var i=1; i<array.length; i++) {
+    var element = array[i];
+    if (element[property] > bestElement[property]) {
+      bestElement = element;
+    }
+  } return bestElement;
+};
+
+exports.round = function(num) {
+  return Math.round(num * 10) / 10;
+};

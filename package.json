@@ -2,7 +2,10 @@
   "name": "hello-evolution",
   "version": "1.0.0",
   "description": "String matching evolutionary algorithms",
-  "main": "src/main.js",
+  "bin": {
+    "hello-evolution": "bin/main.js"
+  },
+  "main": "bin/main.js",
   "directories": {
     "test": "test"
   },
@@ -31,5 +34,8 @@
   "homepage": "https://github.com/codenameyau/hello-evolution#readme",
   "devDependencies": {
     "chai": "^3.4.1"
+  },
+  "dependencies": {
+    "async": "^1.5.2"
   }
 }

@@ -6,10 +6,20 @@ var utils = require('./utils');
 * GENOTYPE CONSTRUCTOR FUNCTION
 *********************************************************************/
 function Phenotype(string, length) {
+  // The mutation rate is optimized at 10%.
   this.mutationRate = 0.1;
+
+  // The phenotype string.
   this.string = string || this.genesis(length);
+
+  // The haming distance of the simulation target fitness.
   this.fitness = 0;
+
+  // The total haming distance difference relative to the population.
   this.diversity = 0;
+
+  // A weighted sum of fitness and diversity.
+  this.score = 0;
 }
 
 // A set of all possible characters.
@@ -20,6 +30,11 @@ for (var c=32; c<127; c++) {
 
 Phenotype.prototype.getRandomCharacter = function() {
   return charset[utils.randomInt(0, charset.length)];
+};
+
+Phenotype.prototype.calculateScore = function() {
+  // Adjust the weight of the score here or override the prototype.
+  this.score = utils.round(this.fitness + this.diversity);
 };
 
 Phenotype.prototype.genesis = function(length) {
