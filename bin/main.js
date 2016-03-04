@@ -7,7 +7,7 @@
 
 var simulation = require('../src/simulation');
 
-simulation.target = 'Hello';
+simulation.target = 'Hello World!';
 simulation.POPULATION_SIZE = 100;
 simulation.MAX_GENERATIONS = 2000;
 simulation.NUM_TRIALS = 50;

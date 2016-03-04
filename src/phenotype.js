@@ -34,6 +34,7 @@ Phenotype.prototype.getRandomCharacter = function() {
 
 Phenotype.prototype.calculateScore = function() {
   // Adjust the weight of the score here or override the prototype.
+  // An equal weight for diversity and fitness performs the best.
   this.score = utils.round(this.fitness + this.diversity);
 };
 
